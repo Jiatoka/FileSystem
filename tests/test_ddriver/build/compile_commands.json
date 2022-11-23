@@ -1,6 +1,6 @@
 [
 {
-  "directory": "/root/user-land-filesystem/tests/test_ddriver",
+  "directory": "/root/user-land-filesystem/tests/test_ddriver/build",
   "command": "/usr/bin/cc  -I/root/user-land-filesystem/tests/test_ddriver/./include  -D_FILE_OFFSET_BITS=64 -no-pie -o CMakeFiles/ddriver_test.dir/src/test.c.o -c /root/user-land-filesystem/tests/test_ddriver/src/test.c",
   "file": "/root/user-land-filesystem/tests/test_ddriver/src/test.c"
 }
