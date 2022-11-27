@@ -169,6 +169,60 @@ src/newfs.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/newfs.dir/build.make CMakeFiles/newfs.dir/src/newfs.c.s
 .PHONY : src/newfs.c.s
 
+src/newfs_debug.o: src/newfs_debug.c.o
+
+.PHONY : src/newfs_debug.o
+
+# target to build an object file
+src/newfs_debug.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/newfs.dir/build.make CMakeFiles/newfs.dir/src/newfs_debug.c.o
+.PHONY : src/newfs_debug.c.o
+
+src/newfs_debug.i: src/newfs_debug.c.i
+
+.PHONY : src/newfs_debug.i
+
+# target to preprocess a source file
+src/newfs_debug.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/newfs.dir/build.make CMakeFiles/newfs.dir/src/newfs_debug.c.i
+.PHONY : src/newfs_debug.c.i
+
+src/newfs_debug.s: src/newfs_debug.c.s
+
+.PHONY : src/newfs_debug.s
+
+# target to generate assembly for a file
+src/newfs_debug.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/newfs.dir/build.make CMakeFiles/newfs.dir/src/newfs_debug.c.s
+.PHONY : src/newfs_debug.c.s
+
+src/newfs_utils.o: src/newfs_utils.c.o
+
+.PHONY : src/newfs_utils.o
+
+# target to build an object file
+src/newfs_utils.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/newfs.dir/build.make CMakeFiles/newfs.dir/src/newfs_utils.c.o
+.PHONY : src/newfs_utils.c.o
+
+src/newfs_utils.i: src/newfs_utils.c.i
+
+.PHONY : src/newfs_utils.i
+
+# target to preprocess a source file
+src/newfs_utils.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/newfs.dir/build.make CMakeFiles/newfs.dir/src/newfs_utils.c.i
+.PHONY : src/newfs_utils.c.i
+
+src/newfs_utils.s: src/newfs_utils.c.s
+
+.PHONY : src/newfs_utils.s
+
+# target to generate assembly for a file
+src/newfs_utils.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/newfs.dir/build.make CMakeFiles/newfs.dir/src/newfs_utils.c.s
+.PHONY : src/newfs_utils.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -181,6 +235,12 @@ help:
 	@echo "... src/newfs.o"
 	@echo "... src/newfs.i"
 	@echo "... src/newfs.s"
+	@echo "... src/newfs_debug.o"
+	@echo "... src/newfs_debug.i"
+	@echo "... src/newfs_debug.s"
+	@echo "... src/newfs_utils.o"
+	@echo "... src/newfs_utils.i"
+	@echo "... src/newfs_utils.s"
 .PHONY : help
 
 

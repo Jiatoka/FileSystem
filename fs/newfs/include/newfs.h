@@ -15,10 +15,17 @@
 
 #define NEWFS_MAGIC                  /* TODO: Define by yourself */
 #define NEWFS_DEFAULT_PERM    0777   /* 全权限打开 */
+#define NEWFS_DBG(fmt, ...) do { printf("NEWFS_DBG: " fmt, ##__VA_ARGS__); } while(0) 
 
-int 			   newfs_driver_read(int offset, uint8_t *out_content, int size);
-int 			   newfs_driver_write(int offset, uint8_t *in_content, int size);
-
+int 			   newfs_driver_read(int offset, uint8_t *out_content, int size,int fd);
+int 			   newfs_driver_write(int offset, uint8_t *in_content, int size,int fd);
+int 			   newfs_mount(struct custom_options options);
+int 			   newfs_umount();
+struct newfs_inode_m* newfs_alloc_inode(struct newfs_dentry_m * dentry); 
+int 			   newfs_sync_inode(struct newfs_inode_m * inode);
+struct newfs_inode_m* newfs_read_inode(struct newfs_dentry_m * dentry, int ino);
+int 			   newfs_alloc_dentry(struct newfs_inode_m* inode, struct newfs_dentry_m* dentry);
+void 			   newfs_dump_map();
 /******************************************************************************
 * SECTION: newfs.c
 *******************************************************************************/

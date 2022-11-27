@@ -13,6 +13,7 @@ static const struct fuse_opt option_spec[] = {		/* 用于FUSE文件系统解析�
 	FUSE_OPT_END
 };
 
+struct newfs_super_m  newfs_super_m; //用来管理全局位图和全局超级块
 struct custom_options newfs_options;			 /* 全局选项 */
 struct newfs_super super; 
 /******************************************************************************
@@ -53,7 +54,11 @@ void* newfs_init(struct fuse_conn_info * conn_info) {
 
 	/* 下面是一个控制设备的示例 */
 	super.fd = ddriver_open(newfs_options.device);
-	
+	if (newfs_mount(newfs_options) != NEWFS_ERROR_NONE) {
+        NEWFS_DBG("[%s] mount error\n", __func__);
+		fuse_exit(fuse_get_context()->fuse);
+		return NULL;
+	} 
 	return NULL;
 }
 
@@ -65,9 +70,12 @@ void* newfs_init(struct fuse_conn_info * conn_info) {
  */
 void newfs_destroy(void* p) {
 	/* TODO: 在这里进行卸载 */
-	
+	if (newfs_umount() != NEWFS_ERROR_NONE) {
+		NEWFS_DBG("[%s] unmount error\n", __func__);
+		fuse_exit(fuse_get_context()->fuse);
+		return;
+	}
 	ddriver_close(super.fd);
-
 	return;
 }
 

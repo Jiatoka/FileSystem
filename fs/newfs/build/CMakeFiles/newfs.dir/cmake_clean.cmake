@@ -1,5 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/newfs.dir/src/newfs.c.o"
+  "CMakeFiles/newfs.dir/src/newfs_debug.c.o"
+  "CMakeFiles/newfs.dir/src/newfs_utils.c.o"
   "newfs"
   "newfs.pdb"
 )

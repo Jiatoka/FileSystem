@@ -40,7 +40,7 @@ types.h
 
 ../include/types.h
 
-/root/user-land-filesystem/fs/newfs/src/newfs.c
+/root/user-land-filesystem/fs/newfs/src/newfs_utils.c
 newfs.h
 /root/user-land-filesystem/fs/newfs/src/newfs.h
 

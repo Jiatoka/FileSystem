@@ -7,3 +7,15 @@ CMakeFiles/newfs.dir/src/newfs.c.o
  ../include/newfs.h
  ../include/types.h
  /root/user-land-filesystem/fs/newfs/src/newfs.c
+CMakeFiles/newfs.dir/src/newfs_debug.c.o
+ ../include/ddriver.h
+ ../include/ddriver_ctl_user.h
+ ../include/newfs.h
+ ../include/types.h
+ /root/user-land-filesystem/fs/newfs/src/newfs_debug.c
+CMakeFiles/newfs.dir/src/newfs_utils.c.o
+ ../include/ddriver.h
+ ../include/ddriver_ctl_user.h
+ ../include/newfs.h
+ ../include/types.h
+ /root/user-land-filesystem/fs/newfs/src/newfs_utils.c
