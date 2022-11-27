@@ -26,6 +26,9 @@ int 			   newfs_sync_inode(struct newfs_inode_m * inode);
 struct newfs_inode_m* newfs_read_inode(struct newfs_dentry_m * dentry, int ino);
 int 			   newfs_alloc_dentry(struct newfs_inode_m* inode, struct newfs_dentry_m* dentry);
 void 			   newfs_dump_map();
+struct newfs_dentry_m* newfs_lookup(const char * path, boolean* is_find, boolean* is_root);
+int 			   newfs_calc_lvl(const char * path); 
+char* 			   newfs_get_fname(const char* path);
 /******************************************************************************
 * SECTION: newfs.c
 *******************************************************************************/

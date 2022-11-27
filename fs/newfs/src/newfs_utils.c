@@ -8,6 +8,125 @@ int global_sz_io;
 int global_sz_disk;
 
 /**
+ * @brief 获取文件名
+ * 
+ * @param path 
+ * @return char* 
+ */
+char* newfs_get_fname(const char* path) {
+    char ch = '/';
+    char *q = strrchr(path, ch) + 1;
+    return q;
+}
+
+/**
+ * @brief 计算路径的层级
+ * exm: /av/c/d/f
+ * -> lvl = 4
+ * @param path 
+ * @return int 
+ */
+int newfs_calc_lvl(const char * path) {
+    // char* path_cpy = (char *)malloc(strlen(path));
+    // strcpy(path_cpy, path);
+    char* str = path;
+    int   lvl = 0;
+    if (strcmp(path, "/") == 0) {
+        return lvl;
+    }
+    while (*str != NULL) {
+        if (*str == '/') {
+            lvl++;
+        }
+        str++;
+    }
+    return lvl;
+}
+
+/**
+ * @brief 
+ * path: /qwe/ad  total_lvl = 2,
+ *      1) find /'s inode       lvl = 1
+ *      2) find qwe's dentry 
+ *      3) find qwe's inode     lvl = 2
+ *      4) find ad's dentry
+ *
+ * path: /qwe     total_lvl = 1,
+ *      1) find /'s inode       lvl = 1
+ *      2) find qwe's dentry
+ * 
+ * @param path 
+ * @return struct sfs_inode* 
+ */
+struct newfs_dentry_m* newfs_lookup(const char * path, boolean* is_find, boolean* is_root) {
+    struct newfs_dentry_m* dentry_cursor = newfs_super_m.root_dentry;
+    struct newfs_dentry_m* dentry_ret = NULL;
+    struct newfs_inode_m*  inode; 
+    int   total_lvl = newfs_calc_lvl(path);
+    int   lvl = 0;
+    boolean is_hit;
+    char* fname = NULL;
+    char* path_cpy = (char*)malloc(sizeof(path));
+    *is_root = FALSE;
+    strcpy(path_cpy, path);
+
+    if (total_lvl == 0) {                           /* 根目录 */
+        *is_find = TRUE;
+        *is_root = TRUE;
+        dentry_ret = newfs_super_m.root_dentry;
+    }
+    fname = strtok(path_cpy, "/"); //strtok和split差不多      
+    while (fname)
+    {   
+        lvl++;
+        if (dentry_cursor->inode == NULL) {           /* Cache机制 */
+            newfs_read_inode(dentry_cursor, dentry_cursor->ino);
+        }
+
+        inode = dentry_cursor->inode;
+
+        if (NEWFS_IS_FILE(inode) && lvl < total_lvl) {
+            NEWFS_DBG("[%s] not a dir\n", __func__);
+            dentry_ret = inode->dentry;
+            break;
+        }
+        if (NEWFS_IS_DIR(inode)) {
+            dentry_cursor = inode->dentrys;
+            is_hit        = FALSE;
+
+            while (dentry_cursor)
+            {
+                if (memcmp(dentry_cursor->fname, fname, strlen(fname)) == 0) {
+                    is_hit = TRUE;
+                    break;
+                }
+                dentry_cursor = dentry_cursor->brother;
+            }
+            
+            if (!is_hit) {
+                *is_find = FALSE;
+                NEWFS_DBG("[%s] not found %s\n", __func__, fname);
+                dentry_ret = inode->dentry;
+                break;
+            }
+
+            if (is_hit && lvl == total_lvl) {
+                *is_find = TRUE;
+                dentry_ret = dentry_cursor;
+                break;
+            }
+        }
+        fname = strtok(NULL, "/"); 
+    }
+
+    if (dentry_ret->inode == NULL) {
+        dentry_ret->inode = newfs_read_inode(dentry_ret, dentry_ret->ino);
+    }
+    //如果是文件则返回上一级目录的目录项,如果是目录则返回对应的目录项
+    return dentry_ret;
+}
+
+/**
  * @brief 为一个inode分配dentry，采用头插法
  * 
  * @param inode 

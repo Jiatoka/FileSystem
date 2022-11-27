@@ -3,6 +3,9 @@
 
 #define NEWFS_ERROR_NOSPACE       ENOSPC
 #define NEWFS_ERROR_IO            EIO     /* Error Input/Output */
+#define NEWFS_ERROR_NOTFOUND      ENOENT
+#define NEWFS_ERROR_EXISTS        EEXIST
+#define NEWFS_ERROR_UNSUPPORTED   ENXIO
 
 #define MAX_NAME_LEN    128     
 #define UINT32_BITS             32
@@ -15,6 +18,7 @@
 #define NEWFS_INODE_PER_FILE      1
 #define NEWFS_DATA_PER_FILE       12
 #define NEWFS_ROOT_INO            0
+#define NEWFS_DEFAULT_PERM        0777
 
 #define NEWFS_BLKS_SZ(blks)               (blks * NEWFS_IO_SZ)
 #define NEWFS_IS_FILE(pinode)             (pinode->dentry->ftype == NEWFS_FILE)
@@ -64,7 +68,7 @@ struct newfs_inode {
     int           link;               // 链接数
     FILE_TYPE     ftype;              // 文件类型（目录类型、普通文件类型）
     int           dir_cnt;            // 如果是目录类型文件，下面有几个目录项
-    int           block_pointer[6];   // 数据块指针（可固定分配）
+    // int           block_pointer[6];   // 数据块指针（可固定分配）
     char          target_path[MAX_NAME_LEN];/* store traget path when it is a symlink */
 };
 
@@ -86,7 +90,7 @@ struct newfs_inode_m
     struct newfs_dentry_m* dentry;                        /* 指向该inode的dentry */
     struct newfs_dentry_m* dentrys;                       /* 所有目录项 */
     uint8_t*           data;                              /* 文件的数据 */
-    int                block_pointer[6];       
+    // int                block_pointer[6];       
 }; 
 
 struct newfs_dentry_m

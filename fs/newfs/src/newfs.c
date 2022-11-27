@@ -88,7 +88,28 @@ void newfs_destroy(void* p) {
  */
 int newfs_mkdir(const char* path, mode_t mode) {
 	/* TODO: 解析路径，创建目录 */
-	return 0;
+	(void)mode;
+	boolean is_find, is_root;
+	char* fname;
+	struct newfs_dentry_m* last_dentry = newfs_lookup(path, &is_find, &is_root);
+	struct newfs_dentry_m* dentry;
+	struct newfs_inode_m*  inode;
+
+	if (is_find) {
+		return -NEWFS_ERROR_EXISTS;
+	}
+
+	if (NEWFS_IS_FILE(last_dentry->inode)) {
+		return -NEWFS_ERROR_UNSUPPORTED;
+	}
+
+	fname  = newfs_get_fname(path);
+	dentry = new_dentry_m(fname, NEWFS_DIR); 
+	dentry->parent = last_dentry;
+	inode  = newfs_alloc_inode(dentry);
+	newfs_alloc_dentry(last_dentry->inode, dentry);
+	
+	return NEWFS_ERROR_NONE;
 }
 
 /**
@@ -100,7 +121,38 @@ int newfs_mkdir(const char* path, mode_t mode) {
  */
 int newfs_getattr(const char* path, struct stat * newfs_stat) {
 	/* TODO: 解析路径，获取Inode，填充newfs_stat，可参考/fs/simplefs/sfs.c的sfs_getattr()函数实现 */
-	return 0;
+	boolean	is_find, is_root;
+	struct newfs_dentry_m* dentry = newfs_lookup(path, &is_find, &is_root);
+	if (is_find == FALSE) {
+		return -NEWFS_ERROR_NOTFOUND;
+	}
+
+	if (NEWFS_IS_DIR(dentry->inode)) {
+		newfs_stat->st_mode = S_IFDIR | NEWFS_DEFAULT_PERM;
+		newfs_stat->st_size = dentry->inode->dir_cnt * sizeof(struct newfs_dentry);
+	}
+	else if (NEWFS_IS_FILE(dentry->inode)) {
+		newfs_stat->st_mode = S_IFREG | NEWFS_DEFAULT_PERM;
+		newfs_stat->st_size = dentry->inode->size;
+	}
+	// else if (SFS_IS_SYM_LINK(dentry->inode)) {
+	// 	sfs_stat->st_mode = S_IFLNK | SFS_DEFAULT_PERM;
+	// 	sfs_stat->st_size = dentry->inode->size;
+	// }
+
+	newfs_stat->st_nlink = 1;
+	newfs_stat->st_uid 	 = getuid();
+	newfs_stat->st_gid 	 = getgid();
+	newfs_stat->st_atime   = time(NULL);
+	newfs_stat->st_mtime   = time(NULL);
+	newfs_stat->st_blksize = NEWFS_IO_SZ;
+
+	if (is_root) {
+		newfs_stat->st_size	= newfs_super_m.sz_usage; 
+		newfs_stat->st_blocks = newfs_super_m.sz_disk / NEWFS_IO_SZ;
+		newfs_stat->st_nlink  = 2;		/* !特殊，根目录link数为2 */
+	}
+	return NEWFS_ERROR_NONE;
 }
 
 /**
@@ -137,7 +189,32 @@ int newfs_readdir(const char * path, void * buf, fuse_fill_dir_t filler, off_t o
  */
 int newfs_mknod(const char* path, mode_t mode, dev_t dev) {
 	/* TODO: 解析路径，并创建相应的文件 */
-	return 0;
+	boolean	is_find, is_root;
+	struct newfs_dentry_m* last_dentry = newfs_lookup(path, &is_find, &is_root);
+	struct newfs_dentry_m* dentry;
+	struct newfs_inode_m* inode;
+	char* fname;
+	
+	if (is_find == TRUE) {
+		return -NEWFS_ERROR_EXISTS;
+	}
+
+	fname = newfs_get_fname(path);
+	
+	if (S_ISREG(mode)) {
+		dentry = new_dentry_m(fname, NEWFS_FILE);
+	}
+	else if (S_ISDIR(mode)) {
+		dentry = new_dentry_m(fname, NEWFS_DIR);
+	}
+	else {
+		dentry = new_dentry_m(fname, NEWFS_FILE);
+	}
+	dentry->parent = last_dentry;
+	inode = newfs_alloc_inode(dentry);
+	newfs_alloc_dentry(last_dentry->inode, dentry);
+
+	return NEWFS_ERROR_NONE;
 }
 
 /**
