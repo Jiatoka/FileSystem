@@ -5,6 +5,7 @@
         "*.wxs": "javascript",
         "ioctl.h": "c",
         "sfs.h": "c",
-        "newfs.h": "c"
+        "newfs.h": "c",
+        "type_traits": "cpp"
     }
 }
