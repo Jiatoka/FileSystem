@@ -324,32 +324,40 @@ struct newfs_inode_m* newfs_alloc_inode(struct newfs_dentry_m * dentry) {
     
     inode->dir_cnt = 0;
     inode->dentrys = NULL;
-    
+
+    if(ino_cursor!=0){
+        //只要不是根节点都为文件分配一个数据块
+        //更新数据位图
+        int data_no=ino_cursor;
+        int data_byte_cursor=data_no/8;
+        int start=data_no%8;
+        newfs_super_m.map_data[data_byte_cursor]|=(0x1 << start);
+    }
+
     //当前索引节点是否是一个文件的索引节点，若是则需要为索引节点分配数据区
     if (NEWFS_IS_FILE(inode)) {
         inode->data = (uint8_t *)malloc(NEWFS_BLKS_SZ(NEWFS_DATA_PER_FILE));
-        //更新数据位图
-        int data_no=ino_cursor*6;
-        int data_byte_cursor=data_no/8;
-        int start=data_no%8;
-        if(start<=2){
-            for(int i=start;i<=start+5;i++){
-                newfs_super_m.map_data[data_byte_cursor]|=(0x1 << i);
-            }
-        }
-        else{
-            //块1
-            for(int i=start;i<=7;i++){
-                newfs_super_m.map_data[data_byte_cursor]|=(0x1 << i);
-            }
+        // int data_no=ino_cursor*6;
+        // int data_byte_cursor=data_no/8;
+        // int start=data_no%8;
+        // if(start<=2){
+        //     for(int i=start;i<=start+5;i++){
+        //         newfs_super_m.map_data[data_byte_cursor]|=(0x1 << i);
+        //     }
+        // }
+        // else{
+        //     //块1
+        //     for(int i=start;i<=7;i++){
+        //         newfs_super_m.map_data[data_byte_cursor]|=(0x1 << i);
+        //     }
 
-            //块2
-            data_byte_cursor+=1;
-            int end=start-2;
-            for(int i=0;i<end;i++){
-                newfs_super_m.map_data[data_byte_cursor]|=(0x1 << i);
-            }
-        }
+        //     //块2
+        //     data_byte_cursor+=1;
+        //     int end=start-2;
+        //     for(int i=0;i<end;i++){
+        //         newfs_super_m.map_data[data_byte_cursor]|=(0x1 << i);
+        //     }
+        // }
     }
 
     return inode;
@@ -413,11 +421,11 @@ int newfs_mount(struct custom_options options){
         inode_num  =  global_sz_disk / ((NEWFS_DATA_PER_FILE + NEWFS_INODE_PER_FILE) * NEWFS_IO_SZ);
 
         //索引位图的块数(Inode Map)
-        map_inode_blks = NEWFS_ROUND_UP(NEWFS_ROUND_UP(inode_num, UINT32_BITS), NEWFS_IO_SZ) 
-                         / NEWFS_IO_SZ;
+        map_inode_blks = NEWFS_ROUND_UP(NEWFS_ROUND_UP(inode_num, UINT32_BITS), (NEWFS_IO_SZ*8)) 
+                         / (NEWFS_IO_SZ*8);
         
         //数据位图的大小(所占磁盘块的块数)
-        map_data_blks=6*map_inode_blks;
+        map_data_blks=map_inode_blks;
                                                       /* 布局layout */
         newfs_super_m.max_ino = (inode_num - super_blks - map_inode_blks-map_data_blks);
         newfs_super.max_ino=(inode_num - super_blks - map_inode_blks-map_data_blks); 

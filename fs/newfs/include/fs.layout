@@ -21,7 +21,7 @@
 # 4. 如果需要额外添加布局, 可做如下修改:
 #    | Super(x) | Add Map(1) | ...(20) | Inode Map(y) | DATA Map(z) | DATA(*) |
 # 5. 该布局文件用于检查你的文件系统是否符合要求, 请保证你的布局文件中的数据块数量与
-#    实际的数据块数量一致.磁盘的大小为4MB
+#    实际的数据块数量一致.磁盘的大小为4MB.为了简单起见一个文件一个数据块
 
 | BSIZE = 512 B |
-| Super(1) | Inode Map(2) | DATA Map(12) | DATA(*) |
+| Super(1) | Inode Map(1) | DATA Map(1) | DATA(*) |

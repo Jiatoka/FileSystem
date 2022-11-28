@@ -18,7 +18,7 @@
 #define NEWFS_ERROR_NONE          0
 #define NEWFS_IO_SZ               512
 #define NEWFS_INODE_PER_FILE      1
-#define NEWFS_DATA_PER_FILE       12
+#define NEWFS_DATA_PER_FILE       2
 #define NEWFS_ROOT_INO            0
 #define NEWFS_DEFAULT_PERM        0777
 
@@ -134,6 +134,6 @@ static inline struct newfs_dentry_m* new_dentry_m(char * fname, FILE_TYPE ftype)
     dentry->ino     = -1;
     dentry->inode   = NULL;
     dentry->parent  = NULL;
-    dentry->brother = NULL;                                            
+    dentry->brother = NULL;                                       
 }
 #endif /* _TYPES_H_ */
