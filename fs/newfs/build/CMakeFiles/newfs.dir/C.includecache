@@ -44,11 +44,3 @@ types.h
 newfs.h
 /root/user-land-filesystem/fs/newfs/src/newfs.h
 
-/root/user-land-filesystem/fs/newfs/src/newfs_debug.c
-newfs.h
-/root/user-land-filesystem/fs/newfs/src/newfs.h
-
-/root/user-land-filesystem/fs/newfs/src/newfs_utils.c
-newfs.h
-/root/user-land-filesystem/fs/newfs/src/newfs.h
-

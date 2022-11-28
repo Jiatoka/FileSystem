@@ -58,7 +58,7 @@ void* newfs_init(struct fuse_conn_info * conn_info) {
         NEWFS_DBG("[%s] mount error\n", __func__);
 		fuse_exit(fuse_get_context()->fuse);
 		return NULL;
-	} 
+	}
 	return NULL;
 }
 
@@ -176,7 +176,21 @@ int newfs_getattr(const char* path, struct stat * newfs_stat) {
 int newfs_readdir(const char * path, void * buf, fuse_fill_dir_t filler, off_t offset,
 			    		 struct fuse_file_info * fi) {
     /* TODO: 解析路径，获取目录的Inode，并读取目录项，利用filler填充到buf，可参考/fs/simplefs/sfs.c的sfs_readdir()函数实现 */
-    return 0;
+    boolean	is_find, is_root;
+	int		cur_dir = offset;
+
+	struct newfs_dentry_m* dentry = newfs_lookup(path, &is_find, &is_root);
+	struct newfs_dentry_m* sub_dentry;
+	struct newfs_inode_m* inode;
+	if (is_find) {
+		inode = dentry->inode;
+		sub_dentry = newfs_get_dentry(inode, cur_dir);
+		if (sub_dentry) {
+			filler(buf, sub_dentry->fname, NULL, ++offset);
+		}
+		return NEWFS_ERROR_NONE;
+	}
+	return -NEWFS_ERROR_NOTFOUND;
 }
 
 /**
@@ -244,6 +258,27 @@ int newfs_utimens(const char* path, const struct timespec tv[2]) {
 int newfs_write(const char* path, const char* buf, size_t size, off_t offset,
 		        struct fuse_file_info* fi) {
 	/* 选做 */
+	boolean	is_find, is_root;
+	struct newfs_dentry_m* dentry = newfs_lookup(path, &is_find, &is_root);
+	struct newfs_inode_m*  inode;
+	
+	if (is_find == FALSE) {
+		return -NEWFS_ERROR_NOTFOUND;
+	}
+
+	inode = dentry->inode;
+	
+	if (NEWFS_IS_DIR(inode)) {
+		return -NEWFS_ERROR_ISDIR;	
+	}
+
+	if (inode->size < offset) {
+		return -NEWFS_ERROR_SEEK;
+	}
+
+	memcpy(inode->data + offset, buf, size);
+	inode->size = offset + size > inode->size ? offset + size : inode->size;
+	
 	return size;
 }
 
@@ -260,7 +295,27 @@ int newfs_write(const char* path, const char* buf, size_t size, off_t offset,
 int newfs_read(const char* path, char* buf, size_t size, off_t offset,
 		       struct fuse_file_info* fi) {
 	/* 选做 */
-	return size;			   
+	boolean	is_find, is_root;
+	struct newfs_dentry_m* dentry = newfs_lookup(path, &is_find, &is_root);
+	struct newfs_inode_m*  inode;
+
+	if (is_find == FALSE) {
+		return -NEWFS_ERROR_NOTFOUND;
+	}
+
+	inode = dentry->inode;
+	
+	if (NEWFS_IS_DIR(inode)) {
+		return -NEWFS_ERROR_ISDIR;	
+	}
+
+	if (inode->size < offset) {
+		return -NEWFS_ERROR_SEEK;
+	}
+
+	memcpy(buf, inode->data + offset, size);
+
+	return size;		   
 }
 
 /**

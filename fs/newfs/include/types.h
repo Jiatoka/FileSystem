@@ -6,6 +6,8 @@
 #define NEWFS_ERROR_NOTFOUND      ENOENT
 #define NEWFS_ERROR_EXISTS        EEXIST
 #define NEWFS_ERROR_UNSUPPORTED   ENXIO
+#define NEWFS_ERROR_SEEK          ESPIPE     
+#define NEWFS_ERROR_ISDIR         EISDIR
 
 #define MAX_NAME_LEN    128     
 #define UINT32_BITS             32

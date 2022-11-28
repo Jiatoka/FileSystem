@@ -8,6 +8,27 @@ int global_sz_io;
 int global_sz_disk;
 
 /**
+ * @brief 获取目录项 
+ * 
+ * @param inode 
+ * @param dir [0...]
+ * @return struct sfs_dentry* 
+ */
+struct newfs_dentry_m* newfs_get_dentry(struct newfs_inode_m * inode, int dir) {
+    struct newfs_dentry_m* dentry_cursor = inode->dentrys;
+    int    cnt = 0;
+    while (dentry_cursor)
+    {
+        if (dir == cnt) {
+            return dentry_cursor;
+        }
+        cnt++;
+        dentry_cursor = dentry_cursor->brother;
+    }
+    return NULL;
+}
+
+/**
  * @brief 获取文件名
  * 
  * @param path 
