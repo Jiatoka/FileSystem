@@ -137,7 +137,7 @@ struct newfs_dentry_m* newfs_lookup(const char * path, boolean* is_find, boolean
                 break;
             }
         }
-        fname = strtok(NULL, "/"); 
+        fname = strtok(NULL, "/"); //第二次调用第一个参数必须是NULL
     }
 
     if (dentry_ret->inode == NULL) {
